@@ -115,7 +115,7 @@ def gcode_create_lines(lines, z_height, line_height, line_width, speed):
 
 def create_layer(lines, seam_length, current_z, layer_height, line_width, speed, travel_speed=200):
     gcodes = []
-    gcodes.append(Gcode("G1", [Parameter("E", -0.5)], "retract"))
+    gcodes.append(Gcode("G1", [Parameter("E", -5.0),Parameter("F", 45 * 60)], "retract"))
 
     gcode = Gcode("G1", [
         Parameter("X", lines[0].x1),
@@ -130,7 +130,7 @@ def create_layer(lines, seam_length, current_z, layer_height, line_width, speed,
     ])
     gcodes.append(gcode)
 
-    gcodes.append(Gcode("G1", [Parameter("E", 0.5)], "unretract"))
+    gcodes.append(Gcode("G1", [Parameter("E", 5.0),Parameter("F", 45 * 60)], "unretract"))
 
     end_seam_line = None
     seam_length_complete = 0
@@ -161,11 +161,25 @@ def create_layer(lines, seam_length, current_z, layer_height, line_width, speed,
 
 
 def main():
-    gcodes = ["START_PRINT BED_TEMP=80 EXTRUDER_TEMP=240", "M83", "M106 S40"]
-    # gcodes = ["G28","M83"]
+    gcodes = [";FLAVOR:Marlin","M140 S55", "M105","M190 S55","M104 S215","M105","M109 S215", "M83", "M106 S40"]
+    gcodes.append("M82 ;absolute extrusion mode")
+    gcodes.append("M82 ;absolute extrusion mode")
+    gcodes.append("; Ender 3 Custom Start G-code")
+    gcodes.append("G92 E0 ; Reset Extruder")
+    gcodes.append("G28 ; Home all axes")
+    gcodes.append("G1 Z2.0 F3000 ; Move Z Axis up little to prevent scratching of Heat Bed")
+    gcodes.append("G1 X10.1 Y20 Z0.3 F5000.0 ; Move to start position")
+    gcodes.append("G1 X10.1 Y200.0 Z0.3 F1500.0 E15 ; Draw the first line")
+    gcodes.append("G1 X10.4 Y200.0 Z0.3 F5000.0 ; Move to side a little")
+    gcodes.append("G1 X10.4 Y20 Z0.3 F1500.0 E30 ; Draw the second line")
+    gcodes.append("G92 E0 ; Reset Extruder")
+    gcodes.append("G1 Z2.0 F3000 ; Move Z Axis up little to prevent scratching of Heat Bed")
+    gcodes.append("G1 Z0.5 F5000.0 ; Move over to prevent blob squish")
+    gcodes.append("G92 E0")
 
-    layer_height = 0.3
-    line_width = 0.8
+
+    layer_height = 0.25
+    line_width = 0.4
     seam_length_external = 60
     seam_length_internal = 60
     speed_first_layer = 20
@@ -183,7 +197,7 @@ def main():
         first_layer = create_layer(lines_list[x], 0, 0, 0.3, line_width, speed_first_layer)
         gcodes.extend(first_layer)
 
-    gcodes.append("M106 S128")
+    gcodes.append("M106 S256")
     # other layers
     figure_height = 10
     for layer_level in np.arange(layer_height, figure_height, layer_height):
@@ -195,7 +209,24 @@ def main():
                                       speed_external)
         gcodes.extend(layer_external)
 
-    gcodes.append("END_PRINT")
+    gcodes.append("M140 S0")
+    gcodes.append("G91 ;Relative positioning")
+    gcodes.append("G1 E-2 F2700 ;Retract a bit")
+    gcodes.append("G1 E-2 Z0.2 F2400 ;Retract and raise Z")
+    gcodes.append("G1 X5 Y5 F3000 ;Wipe out")
+    gcodes.append("G1 Z10 ;Raise Z more")
+    gcodes.append("G90 ;Absolute positioning")
+    gcodes.append("G1 X0 Y235 ;Present print")
+    gcodes.append("M106 S0 ;Turn-off fan")
+    gcodes.append("M104 S0 ;Turn-off hotend")
+    gcodes.append("M140 S0 ;Turn-off bed")
+
+    gcodes.append("M84 X Y E ;Disable all steppers but Z")
+
+    gcodes.append("M82 ;absolute extrusion mode")
+    gcodes.append("M104 S0")
+    gcodes.append(";End of Gcode")
+    
     with open('output.gcode', 'w') as f:
         # loop through the list and write each item to the file
         for item in gcodes:
