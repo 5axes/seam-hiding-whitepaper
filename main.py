@@ -113,9 +113,9 @@ def gcode_create_lines(lines, z_height, line_height, line_width, speed):
     return gcodes
 
 
-def create_layer(lines, seam_length, current_z, layer_height, line_width, speed, travel_speed=200, retract_speed=45):
+def create_layer(lines, seam_length, current_z, layer_height, line_width, retract_lengt=5, speed=50, travel_speed=200, retract_speed=45):
     gcodes = []
-    gcodes.append(Gcode("G1", [Parameter("E", -5.0),Parameter("F", retract_speed * 60)], "retract"))
+    gcodes.append(Gcode("G1", [Parameter("E", -retract_lengt),Parameter("F", retract_speed * 60)], "retract"))
 
     gcode = Gcode("G1", [
         Parameter("X", lines[0].x1),
@@ -130,7 +130,7 @@ def create_layer(lines, seam_length, current_z, layer_height, line_width, speed,
     ])
     gcodes.append(gcode)
 
-    gcodes.append(Gcode("G1", [Parameter("E", 5.0),Parameter("F", retract_speed * 60)], "unretract"))
+    gcodes.append(Gcode("G1", [Parameter("E", retract_lengt),Parameter("F", retract_speed * 60)], "unretract"))
 
     end_seam_line = None
     seam_length_complete = 0
@@ -183,15 +183,19 @@ def main():
     line_width = 0.4
     seam_length_external = 60
     seam_length_internal = 60
+    
     speed_first_layer = 18
     speed_internal = 50
     speed_external = 30
     speed_retract = 45
 
+    retract_length = 5
+
+    # Define Circle parameters
     circle_x = 120
     circle_y = 120
     circle_r = 20
-    nb_point = 60
+    nb_point = 108
 
     lines_in_ring = 4
     lines_list = []
@@ -202,7 +206,7 @@ def main():
 
     # first layer
     for x in range(lines_in_ring):
-        first_layer = create_layer(lines_list[x], 0, 0, 0.3, line_width, speed_first_layer,speed_retract)
+        first_layer = create_layer(lines_list[x], 0, 0, 0.3, line_width, retract_length, speed_first_layer, speed_retract)
         gcodes.extend(first_layer)
 
     gcodes.append("M106 S256")
@@ -212,12 +216,12 @@ def main():
         for x in range(lines_in_ring - 1):
             
             layer_internal = create_layer(lines_list[x], seam_length_internal, layer_level, layer_height, line_width,
-                                          speed_internal,speed_retract)
+                                          retract_length, speed_internal, speed_retract)
             gcodes.append(";LAYER : Internal")
             gcodes.extend(layer_internal)
             
         layer_external = create_layer(lines_list[-1], seam_length_external, layer_level, layer_height, line_width,
-                                      speed_external,speed_retract)
+                                      retract_length, speed_external,speed_retract)
         gcodes.append(";LAYER : External")
         gcodes.extend(layer_external)
 
