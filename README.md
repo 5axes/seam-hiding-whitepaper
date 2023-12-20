@@ -13,7 +13,7 @@ It is not an easy task to post-process already existing GCODE files, but if it w
 ## The python code
 The repository includes an [example](https://github.com/vgdh/seam-hiding-whitepaper/blob/main/main.py) demonstrating a basic implementation of the algorithm for printing a ring. This implementation allows specifying parameters such as the number of lines in the ring, layer height, line width, speed, etc.
 
-Also there is an [example](https://github.com/vgdh/seam-hiding-whitepaper/blob/main/nozzle%200.4%20line%200.3x0.8.gcode) of gcode file for 0.4 nozzle line 0.3x0.6 layer height 0.3
+Also there is an [example](https://github.com/vgdh/seam-hiding-whitepaper/blob/main/ender-3%20nozzle%200.4%20line%200.25x0.4.gcode) of gcode file for printer Ender-3 nozzle 0.4 line 0.25x0.4
 
 ## Photos of the Seam Details on the Printed Example.
 The first layer (the top on the first photo) was printed without the algorithm to get better adhesion.
