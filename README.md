@@ -11,9 +11,9 @@ That's it. The algorithm is remarkably simple, though the result is astonishingl
 It is not an easy task to post-process already existing GCODE files, but if it works at the slicer level, it will work very well.
 
 ## The python code
-The repository includes an [example](https://github.com/vgdh/seam-hiding-whitepaper/blob/main/main.py) demonstrating a basic implementation of the algorithm for printing a ring. This implementation allows specifying parameters such as the number of lines in the ring, layer height, line width, speed, etc.
+The repository includes an [example](main.py) demonstrating a basic implementation of the algorithm for printing a ring. This implementation allows specifying parameters such as the number of lines in the ring, layer height, line width, speed, etc.
 
-Also there is an [example](https://github.com/vgdh/seam-hiding-whitepaper/blob/main/ender-3%20nozzle%200.4%20line%200.25x0.4.gcode) of gcode file for printer Ender-3 nozzle 0.4 line 0.25x0.4
+Also there is an [example](ender-3%20nozzle%200.4%20line%200.25x0.4.gcode) of gcode file for printer Ender-3 nozzle 0.4 line 0.25x0.4
 
 ## Photos of the Seam Details on the Printed Example.
 The first layer (the top on the first photo) was printed without the algorithm to get better adhesion.
