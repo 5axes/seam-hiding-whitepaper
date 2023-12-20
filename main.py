@@ -24,7 +24,7 @@ class Line:
 class Parameter:
     def __init__(self, name, value):
         self.name = name
-        self.value = value
+        self.value = round(value,3)
 
 
 class Gcode:
@@ -161,8 +161,8 @@ def create_layer(lines, seam_length, current_z, layer_height, line_width, speed,
 
 
 def main():
-    gcodes = [";FLAVOR:Marlin","M140 S55", "M105","M190 S55","M104 S215","M105","M109 S215", "M83", "M106 S40"]
-    gcodes.append("M82 ;absolute extrusion mode")
+    gcodes = [";FLAVOR:Marlin","M140 S55", "M105","M190 S55","M104 S215","M105","M109 S215", "M106 S40"]
+    
     gcodes.append("M82 ;absolute extrusion mode")
     gcodes.append("; Ender 3 Custom Start G-code")
     gcodes.append("G92 E0 ; Reset Extruder")
@@ -176,6 +176,7 @@ def main():
     gcodes.append("G1 Z2.0 F3000 ; Move Z Axis up little to prevent scratching of Heat Bed")
     gcodes.append("G1 Z0.5 F5000.0 ; Move over to prevent blob squish")
     gcodes.append("G92 E0")
+    gcodes.append("M83 ;relative extrusion mode")
 
 
     layer_height = 0.25
